@@ -1,13 +1,13 @@
 <form class="day">
   <mat-label class="day-label"> {{weekday}} </mat-label>
-  <ng-container *ngFor="let mealName of ['lunch', 'dessert', 'dinner']">
+  <ng-container *ngFor="let mealName of (numberOfMeals | numSequence)">
     <ng-template *ngTemplateOutlet="meal, context: {$implicit: mealName}"></ng-template>
   </ng-container>
 </form>
 
 <ng-template #meal let-mealName>
   <mat-form-field class="meal-name">
-    <mat-label>{{mealName}}</mat-label>
+    <mat-label>Meal {{mealName}}</mat-label>
     <mat-select required>
       <mat-option *ngFor="let recepie of foods" [value]="recepie.value">
         {{recepie.name}}

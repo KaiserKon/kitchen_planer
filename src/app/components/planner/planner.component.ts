@@ -22,4 +22,10 @@ export class PlannerComponent {
     'saturday',
     'sunday',
   ];
+
+  numberOfMeals = 3;
+
+  onChange(event: any) {
+    this.numberOfMeals = Number(event.target.value);
+  }
 }

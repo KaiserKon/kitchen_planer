@@ -1,5 +1,5 @@
 {
-  "name": "kitchen-planer",
+  "name": "kitchen-planner",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -11,6 +11,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^16.1.6",
+    "@angular/cdk": "^16.1.5",
     "@angular/common": "^16.1.6",
     "@angular/compiler": "^16.1.6",
     "@angular/core": "^16.1.6",
@@ -27,6 +28,7 @@
     "@angular-devkit/build-angular": "^16.1.5",
     "@angular/cli": "^16.1.5",
     "@angular/compiler-cli": "^16.1.6",
+    "@types/angular-material": "^1.1.73",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
     "jasmine-core": "~4.0.0",

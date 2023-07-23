@@ -1,5 +1,7 @@
 <!-- TODO Config Area for Timeframe and number of meals per day. -->
 
-<div class="day-body" *ngFor="let weekday of weekdays">
-  <day [weekday]="weekday"></day>
+<div class="day-body">
+  <ng-container *ngFor="let weekday of weekdays">
+    <day [weekday]="weekday"></day>
+  </ng-container>
 </div>

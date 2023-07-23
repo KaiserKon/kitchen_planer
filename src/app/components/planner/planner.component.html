@@ -1,5 +1,5 @@
 <!-- TODO Config Area for Timeframe and number of meals per day. -->
-<input type="number" min="0" [defaultValue]="numberOfMeals" matInput matNativeControl (change)="onChange($event)">
+<input type="number" min="1" [defaultValue]="numberOfMeals" matInput matNativeControl (change)="onChange($event)">
 
 <div class="day-body">
   <ng-container *ngFor="let weekday of weekdays">

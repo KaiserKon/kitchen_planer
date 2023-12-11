@@ -1,0 +1,35 @@
+<mat-form-field>
+  <mat-label>Enter a date range</mat-label>
+  <mat-date-range-input [rangePicker]="picker">
+    <input
+      matStartDate
+      (dateChange)="onStartDateChange($event.value)"
+      placeholder="Start date"
+    />
+    <input
+      matEndDate
+      (dateChange)="onEndDateChange($event.value)"
+      placeholder="End date"
+    />
+  </mat-date-range-input>
+  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-date-range-picker #picker></mat-date-range-picker>
+</mat-form-field>
+
+<mat-form-field>
+  <mat-label>Number of meals per day</mat-label>
+  <input
+    type="number"
+    min="1"
+    [defaultValue]="numberOfMeals"
+    matInput
+    matNativeControl
+    (change)="onChange($event)"
+  />
+</mat-form-field>
+
+<div class="day-body">
+  @for (weekday of weekdays; track $index) {
+    <day [dayLabel]="weekday"></day>
+  }
+</div>

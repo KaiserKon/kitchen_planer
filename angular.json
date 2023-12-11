@@ -71,10 +71,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "kitchenPlanner:build:production"
+              "buildTarget": "kitchenPlanner:build:production"
             },
             "development": {
-              "browserTarget": "kitchenPlanner:build:development"
+              "buildTarget": "kitchenPlanner:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -82,7 +82,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "kitchenPlanner:build"
+            "buildTarget": "kitchenPlanner:build"
           }
         },
         "test": {

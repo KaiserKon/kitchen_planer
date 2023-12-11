@@ -23,12 +23,9 @@ import { DayComponent } from './day.component';
     </mat-form-field>
 
     <div class="day-body">
-      <!-- <ng-container *ngFor="let weekday of weekdays">
-        <day [weekday]="weekday" [numberOfMeals]="numberOfMeals"></day>
-      </ng-container> -->
-      <!-- @for (weekday of weekdays) {
+      @for (weekday of weekdays; track $index) {
       <day [weekday]="weekday" [numberOfMeals]="numberOfMeals"></day>
-      } -->
+      }
     </div>
   `,
   styles: [

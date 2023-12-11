@@ -19,20 +19,22 @@ import { NumSequencePipe } from '../../pipes/numSequenc.pipe';
   template: `
     <form class="day">
       <mat-label class="day-label"> {{ weekday }} </mat-label>
-      <ng-container *ngFor="let mealName of numberOfMeals | numSequence">
-        <ng-template
-          *ngTemplateOutlet="meal; context: { $implicit: mealName }"
-        ></ng-template>
-      </ng-container>
+      @for (mealName of numberOfMeals | numSequence; track $index) {
+      <ng-template
+        *ngTemplateOutlet="meal; context: { $implicit: mealName }"
+      ></ng-template>
+      }
     </form>
 
     <ng-template #meal let-mealName>
       <mat-form-field class="meal-name">
         <mat-label>Meal {{ mealName }}</mat-label>
         <mat-select required>
-          <mat-option *ngFor="let recepie of foods" [value]="recepie.value">
+          @for (recepie of foods; track recepie.value) {
+          <mat-option [value]="recepie.value">
             {{ recepie.name }}
           </mat-option>
+          }
         </mat-select>
       </mat-form-field>
       <mat-form-field class="meal-amount">

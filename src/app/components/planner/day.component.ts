@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
+import { Component, inject, Input, OnDestroy } from '@angular/core';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { ReplaySubject, takeUntil } from 'rxjs';
+import { Recipie, StoreService } from 'src/app/services/store.service';
 import { NumSequencePipe } from '../../pipes/numSequenc.pipe';
 
 @Component({
@@ -18,7 +20,7 @@ import { NumSequencePipe } from '../../pipes/numSequenc.pipe';
   ],
   template: `
     <form class="day">
-      <mat-label class="day-label"> {{ weekday }} </mat-label>
+      <mat-label class="day-label"> {{ dayLabel }} </mat-label>
       @for (mealName of numberOfMeals | numSequence; track $index) {
       <ng-template
         *ngTemplateOutlet="meal; context: { $implicit: mealName }"
@@ -30,8 +32,8 @@ import { NumSequencePipe } from '../../pipes/numSequenc.pipe';
       <mat-form-field class="meal-name">
         <mat-label>Meal {{ mealName }}</mat-label>
         <mat-select required>
-          @for (recepie of foods; track recepie.value) {
-          <mat-option [value]="recepie.value">
+          @for (recepie of recipies; track recepie.id) {
+          <mat-option [value]="recepie.id">
             {{ recepie.name }}
           </mat-option>
           }
@@ -77,15 +79,28 @@ import { NumSequencePipe } from '../../pipes/numSequenc.pipe';
       }
     `,
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class DayComponent {
-  @Input() weekday = '';
-  @Input() numberOfMeals = 0;
+export class DayComponent implements OnDestroy {
+  private store: StoreService = inject(StoreService);
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-  foods: { value: string; name: string }[] = [
-    { value: 'steak', name: 'Steak' },
-    { value: 'pizza', name: 'Pizza' },
-    { value: 'tacos', name: 'Tacos' },
-  ];
+  @Input() dayLabel = '';
+  numberOfMeals = 0;
+
+  recipies: Recipie[] = [];
+
+  constructor() {
+    this.store.numberOfMeals$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((num) => (this.numberOfMeals = num));
+
+    this.store.recipies$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((recipies) => (this.recipies = recipies));
+  }
+
+  ngOnDestroy() {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
+  }
 }

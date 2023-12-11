@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { ReplaySubject, takeUntil } from 'rxjs';
+import { StoreService } from 'src/app/services/store.service';
 import { DayComponent } from './day.component';
 
 @Component({
@@ -12,6 +14,7 @@ import { DayComponent } from './day.component';
   template: `
     <!-- TODO Config Area for Timeframe and number of meals per day. -->
     <mat-form-field>
+      <mat-label>Number of meals per day</mat-label>
       <input
         type="number"
         min="1"
@@ -24,7 +27,7 @@ import { DayComponent } from './day.component';
 
     <div class="day-body">
       @for (weekday of weekdays; track $index) {
-      <day [weekday]="weekday" [numberOfMeals]="numberOfMeals"></day>
+      <day [dayLabel]="weekday"></day>
       }
     </div>
   `,
@@ -37,7 +40,10 @@ import { DayComponent } from './day.component';
     `,
   ],
 })
-export class PlannerComponent {
+export class PlannerComponent implements OnDestroy {
+  private store: StoreService = inject(StoreService);
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+
   weekdays = [
     'monday',
     'tuesday',
@@ -48,9 +54,20 @@ export class PlannerComponent {
     'sunday',
   ];
 
-  numberOfMeals = 3;
+  numberOfMeals = 0;
+
+  constructor() {
+    this.store.numberOfMeals$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((num) => (this.numberOfMeals = num));
+  }
+
+  ngOnDestroy() {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
+  }
 
   onChange(event: any) {
-    this.numberOfMeals = Number(event.target.value);
+    this.store.updateNumberOfMeals(Number(event.target.value));
   }
 }

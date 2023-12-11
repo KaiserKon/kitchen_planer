@@ -3,14 +3,42 @@ import { Component } from '@angular/core';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { DayComponent } from './day/day.component';
+import { DayComponent } from './day.component';
 
 @Component({
   selector: 'planner',
   standalone: true,
   imports: [CommonModule, MatFormFieldModule, MatInputModule, DayComponent],
-  templateUrl: './planner.component.html',
-  styleUrls: ['./planner.component.css'],
+  template: `
+    <!-- TODO Config Area for Timeframe and number of meals per day. -->
+    <mat-form-field>
+      <input
+        type="number"
+        min="1"
+        [defaultValue]="numberOfMeals"
+        matInput
+        matNativeControl
+        (change)="onChange($event)"
+      />
+    </mat-form-field>
+
+    <div class="day-body">
+      <!-- <ng-container *ngFor="let weekday of weekdays">
+        <day [weekday]="weekday" [numberOfMeals]="numberOfMeals"></day>
+      </ng-container> -->
+      <!-- @for (weekday of weekdays) {
+      <day [weekday]="weekday" [numberOfMeals]="numberOfMeals"></day>
+      } -->
+    </div>
+  `,
+  styles: [
+    `
+      .day-body {
+        width: 100%;
+        overflow-x: auto;
+      }
+    `,
+  ],
 })
 export class PlannerComponent {
   weekdays = [

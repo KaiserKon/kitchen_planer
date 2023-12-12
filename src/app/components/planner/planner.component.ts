@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { Moment } from 'moment';
-import { ReplaySubject, takeUntil } from 'rxjs';
+import { first, ReplaySubject, takeUntil } from 'rxjs';
 import { StoreService } from 'src/app/services/store.service';
 import { DayComponent } from '../day/day.component';
 
@@ -19,6 +19,7 @@ import { DayComponent } from '../day/day.component';
     MatDatepickerModule,
     MatNativeDateModule,
     DayComponent,
+    ReactiveFormsModule,
   ],
   styleUrl: './planner.component.css',
   templateUrl: './planner.component.html',
@@ -27,26 +28,39 @@ export class PlannerComponent implements OnDestroy {
   private store: StoreService = inject(StoreService);
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-  weekdays = [
-    'monday',
-    'tuesday',
-    'wednesday',
-    'thursday',
-    'friday',
-    'saturday',
-    'sunday',
-  ];
+  weekdays: string[] = [];
 
   numberOfMeals = 0;
+
+  range = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
+  });
 
   constructor() {
     this.store.numberOfMeals$
       .pipe(takeUntil(this.destroyed$))
       .subscribe((num) => (this.numberOfMeals = num));
 
-    this.store.numberOfDays$
+    this.store.orderedDayNamesForRange$
       .pipe(takeUntil(this.destroyed$))
-      .subscribe((a) => console.log(a));
+      .subscribe((days) => (this.weekdays = days));
+
+    this.store.startDate$
+      .pipe(first())
+      .subscribe((date) => this.range.controls.start.setValue(date));
+
+    this.store.endDate$
+      .pipe(first())
+      .subscribe((date) => this.range.controls.end.setValue(date));
+
+    this.range.controls.start.valueChanges.subscribe((date) =>
+      this.onStartDateChange(date),
+    );
+
+    this.range.controls.end.valueChanges.subscribe((date) =>
+      this.onEndDateChange(date),
+    );
   }
 
   ngOnDestroy() {
@@ -58,11 +72,11 @@ export class PlannerComponent implements OnDestroy {
     this.store.updateNumberOfMeals(Number(event.target.value));
   }
 
-  onStartDateChange(date: Moment | null | undefined) {
-    this.store.updateStartDate(date?.toDate() ?? new Date());
+  onStartDateChange(date: Date | null) {
+    this.store.updateStartDate(date);
   }
 
-  onEndDateChange(date: Moment | null | undefined) {
-    this.store.updateEndDate(date?.toDate() ?? new Date());
+  onEndDateChange(date: Date | null) {
+    this.store.updateEndDate(date);
   }
 }

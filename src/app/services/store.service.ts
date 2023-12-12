@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  filter,
+  map,
+} from 'rxjs';
 
 export interface Recipie {
   id: string;
@@ -38,29 +44,45 @@ export class StoreService {
 
   // ----------------------------------------------------------------------
 
-  private startDateSubject = new BehaviorSubject(new Date());
-  private endDateSubject = new BehaviorSubject(new Date());
+  private startDateSubject: BehaviorSubject<Date | null> =
+    new BehaviorSubject<Date | null>(null);
+  private endDateSubject: BehaviorSubject<Date | null> =
+    new BehaviorSubject<Date | null>(null);
 
   startDate$ = this.startDateSubject.asObservable();
   endDate$ = this.endDateSubject.asObservable();
 
-  numberOfDays$ = combineLatest([
-    this.startDateSubject.asObservable(),
-    this.endDateSubject.asObservable(),
+  orderedDayNamesForRange$ = combineLatest([
+    this.startDate$,
+    this.endDate$,
   ]).pipe(
-    tap(([startDate, endDate]) =>
-      console.log(`start: ${startDate} | end: ${endDate}`),
-    ),
-    map(([startDate, endDate]) => endDate.valueOf() - startDate.valueOf()),
-    map((diff) => Math.ceil(diff / (1000 * 3600 * 24) + 1)),
-    map((days) => Math.max(days, 1)),
+    debounceTime(20),
+    filter((input): input is [Date, Date] => input.every((entry) => !!entry)),
+    map(([startDate, endDate]) => {
+      let daysArray = [];
+      for (
+        let d = new Date(startDate);
+        d <= endDate;
+        d.setDate(d.getDate() + 1)
+      ) {
+        daysArray.push(
+          d.toLocaleDateString('de-DE', {
+            weekday: 'short',
+            year: '2-digit',
+            month: '2-digit',
+            day: '2-digit',
+          }),
+        );
+      }
+      return daysArray;
+    }),
   );
 
-  updateStartDate(date: Date) {
+  updateStartDate(date: Date | null) {
     this.startDateSubject.next(date);
   }
 
-  updateEndDate(date: Date) {
+  updateEndDate(date: Date | null) {
     this.endDateSubject.next(date);
   }
 }

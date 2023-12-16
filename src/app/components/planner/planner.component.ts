@@ -28,9 +28,8 @@ export class PlannerComponent implements OnDestroy {
   private store: StoreService = inject(StoreService);
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-  weekdays: string[] = [];
-
-  numberOfMeals = 0;
+  weekdays$ = this.store.orderedDayNamesForRange$;
+  numberOfMeals$ = this.store.numberOfMeals$;
 
   range = new FormGroup({
     start: new FormControl<Date | null>(null),
@@ -38,14 +37,6 @@ export class PlannerComponent implements OnDestroy {
   });
 
   constructor() {
-    this.store.numberOfMeals$
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe((num) => (this.numberOfMeals = num));
-
-    this.store.orderedDayNamesForRange$
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe((days) => (this.weekdays = days));
-
     this.store.startDate$
       .pipe(first())
       .subscribe((date) => this.range.controls.start.setValue(date));
@@ -54,13 +45,13 @@ export class PlannerComponent implements OnDestroy {
       .pipe(first())
       .subscribe((date) => this.range.controls.end.setValue(date));
 
-    this.range.controls.start.valueChanges.subscribe((date) =>
-      this.onStartDateChange(date),
-    );
+    this.range.controls.start.valueChanges
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((date) => this.onStartDateChange(date));
 
-    this.range.controls.end.valueChanges.subscribe((date) =>
-      this.onEndDateChange(date),
-    );
+    this.range.controls.end.valueChanges
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((date) => this.onEndDateChange(date));
   }
 
   ngOnDestroy() {

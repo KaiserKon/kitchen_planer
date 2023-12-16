@@ -20,7 +20,7 @@
   <input
     type="number"
     min="1"
-    [defaultValue]="numberOfMeals"
+    [defaultValue]="numberOfMeals$ | async"
     matInput
     matNativeControl
     (change)="onChange($event)"
@@ -28,7 +28,7 @@
 </mat-form-field>
 
 <div class="day-body">
-  @for (weekday of weekdays; track $index) {
+  @for (weekday of weekdays$ | async; track $index) {
     <day [dayLabel]="weekday"></day>
   }
 </div>

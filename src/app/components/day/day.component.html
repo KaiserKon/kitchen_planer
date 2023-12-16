@@ -1,32 +1,27 @@
-<form class="day">
+<div class="day">
   <mat-label class="day-label"> {{ dayLabel }} </mat-label>
-  @for (mealName of numberOfMeals | numSequence; track $index) {
-    <ng-template
-      *ngTemplateOutlet="meal; context: { $implicit: mealName }"
-    ></ng-template>
-  }
-</form>
-
-<ng-template #meal let-mealName>
-  <mat-form-field class="meal-name">
-    <mat-label>Meal {{ mealName }}</mat-label>
-    <mat-select required>
-      @for (recepie of recipies; track recepie.id) {
-        <mat-option [value]="recepie.id">
-          {{ recepie.name }}
-        </mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
   <mat-form-field class="meal-amount">
     <mat-label>num</mat-label>
     <input
       type="number"
       min="0"
+      max="250"
       [defaultValue]="0"
       required
       matInput
       matNativeControl
     />
   </mat-form-field>
-</ng-template>
+  @for (mealName of numberOfMeals$ | async | numSequence; track $index) {
+    <mat-form-field class="meal-name">
+      <mat-label>Meal {{ mealName }}</mat-label>
+      <mat-select required>
+        @for (recepie of recipies$ | async; track recepie.id) {
+          <mat-option [value]="recepie.id">
+            {{ recepie.name }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+</div>

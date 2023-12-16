@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true,
 })
 export class NumSequencePipe implements PipeTransform {
-  transform(value: number): Array<number> {
-    return Array.from({ length: value }, (_, i) => i + 1);
+  transform(value: number | null): Array<number> {
+    return value ? Array.from({ length: value }, (_, i) => i + 1) : [];
   }
 }

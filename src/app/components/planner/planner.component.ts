@@ -29,7 +29,6 @@ export class PlannerComponent implements OnDestroy {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   weekdays$ = this.store.orderedDayNamesForRange$;
-  numberOfMeals$ = this.store.numberOfMeals$;
 
   range = new FormGroup({
     start: new FormControl<Date | null>(null),
@@ -57,10 +56,6 @@ export class PlannerComponent implements OnDestroy {
   ngOnDestroy() {
     this.destroyed$.next(true);
     this.destroyed$.complete();
-  }
-
-  onChange(event: any) {
-    this.store.updateNumberOfMeals(Number(event.target.value));
   }
 
   onStartDateChange(date: Date | null) {
